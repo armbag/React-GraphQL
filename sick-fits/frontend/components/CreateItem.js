@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
-import Router from "next/router";
-import Form from "./styles/Form";
-import formatMoney from "../lib/formatMoney";
-import Error from "./ErrorMessage";
+import React, { Component } from 'react';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+import Router from 'next/router';
+import Form from './styles/Form';
+import formatMoney from '../lib/formatMoney';
+import Error from './ErrorMessage';
 
 const CREATE_ITEM_MUTATION = gql`
   mutation CREATE_ITEM_MUTATION(
@@ -28,29 +28,29 @@ const CREATE_ITEM_MUTATION = gql`
 
 class CreateItem extends Component {
   state = {
-    title: "cool shoes",
-    description: "random",
-    image: "dog.jpg",
-    largeImage: "large-dog.jpg",
-    price: 110
+    title: 'Give a title',
+    description: 'Describe your product',
+    image: 'upload a jpg file',
+    largeImage: 'upload a jpg file',
+    price: 0
   };
   handleChange = e => {
     const { name, type, value } = e.target;
-    const val = type === "number" ? parseFloat(value) : value;
+    const val = type === 'number' ? parseFloat(value) : value;
     this.setState({ [name]: val });
   };
 
   uploadFile = async e => {
-    console.log("uploading file...");
+    console.log('uploading file...');
     const files = e.target.files;
     const data = new FormData();
-    data.append("file", files[0]);
-    data.append("upload_preset", "sickfits");
+    data.append('file', files[0]);
+    data.append('upload_preset', 'sickfits');
 
     const res = await fetch(
-      "https://api.cloudinary.com/v1_1/ddkl3olru/image/upload",
+      'https://api.cloudinary.com/v1_1/ddkl3olru/image/upload',
       {
-        method: "POST",
+        method: 'POST',
         body: data
       }
     );
@@ -75,7 +75,7 @@ class CreateItem extends Component {
               //   change to the single item page
               console.log(res);
               Router.push({
-                pathname: "/item",
+                pathname: '/item',
                 query: { id: res.data.createItem.id }
               });
             }}

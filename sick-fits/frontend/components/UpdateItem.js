@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Mutation, Query } from "react-apollo";
-import gql from "graphql-tag";
-import Router from "next/router";
-import Form from "./styles/Form";
-import formatMoney from "../lib/formatMoney";
-import Error from "./ErrorMessage";
+import React, { Component } from 'react';
+import { Mutation, Query } from 'react-apollo';
+import gql from 'graphql-tag';
+import Router from 'next/router';
+import Form from './styles/Form';
+import formatMoney from '../lib/formatMoney';
+import Error from './ErrorMessage';
 
 const SINGLE_ITEM_QUERY = gql`
   query SINGLE_ITEM_QUERY($id: ID!) {
@@ -43,12 +43,12 @@ class UpdateItem extends Component {
 
   handleChange = e => {
     const { name, type, value } = e.target;
-    const val = type === "number" ? parseFloat(value) : value;
+    const val = type === 'number' ? parseFloat(value) : value;
     this.setState({ [name]: val });
   };
   updateItem = async (e, updateItemMutation) => {
     e.preventDefault();
-    console.log("updating Item!!");
+    console.log('updating Item!!');
     console.log(this.state);
     const res = await updateItemMutation({
       variables: {
@@ -56,7 +56,7 @@ class UpdateItem extends Component {
         ...this.state
       }
     });
-    console.log("updated!");
+    console.log('updated!');
   };
 
   render() {
@@ -90,7 +90,7 @@ class UpdateItem extends Component {
                     </label>
 
                     <label htmlFor="price">
-                      Price
+                      Price i{' '}
                       <input
                         type="number"
                         id="price"
@@ -116,7 +116,7 @@ class UpdateItem extends Component {
                     </label>
 
                     <button type="submit">
-                      Sav{loading ? "ing" : "e"} the changes
+                      Sav{loading ? 'ing' : 'e'} the changes
                     </button>
                   </fieldset>
                 </Form>
