@@ -18,11 +18,11 @@ const Mutations = {
 					// this is how to create a relationship between item and the user
 					user: {
 						connect: {
-							id: ctx.request.userId
-						}
+							id: ctx.request.userId,
+						},
 					},
-					...args
-				}
+					...args,
+				},
 			},
 			info
 		);
@@ -39,8 +39,8 @@ const Mutations = {
 			{
 				data: updates,
 				where: {
-					id: args.id
-				}
+					id: args.id,
+				},
 			},
 			info
 		);
@@ -51,7 +51,7 @@ const Mutations = {
 		const item = await ctx.db.query.item({ where }, `{id title user { id }}`);
 		// 2 check if they own that item, or have the permissions
 		const ownsItem = item.user.id === ctx.request.userId;
-		const hasPermissions = ctx.request.user.permissions.some(permission =>
+		const hasPermissions = ctx.request.user.permissions.some((permission) =>
 			['ADMIN', 'ITEMDELETE'].includes(permission)
 		);
 		if (!ownsItem && !hasPermissions) {
@@ -70,8 +70,8 @@ const Mutations = {
 				data: {
 					...args,
 					password,
-					permissions: { set: ['USER'] }
-				}
+					permissions: { set: ['USER'] },
+				},
 			},
 			info
 		);
@@ -80,7 +80,7 @@ const Mutations = {
 		// we set the jwt as a cookie on the response
 		ctx.response.cookie('token', token, {
 			httpOnly: true,
-			maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
+			maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year cookie
 		});
 		// finally we return the user to the browser
 		return user;
@@ -101,7 +101,7 @@ const Mutations = {
 		// set the cookie with the token
 		ctx.response.cookie('token', token, {
 			httpOnly: true,
-			maxAge: 1000 * 60 * 60 * 24 * 365
+			maxAge: 1000 * 60 * 60 * 24 * 365,
 		});
 		// return the user
 		return user;
@@ -122,7 +122,7 @@ const Mutations = {
 		const resetTokenExpiry = Date.now() + 3600000; // 1 hour
 		const res = await ctx.db.mutation.updateUser({
 			where: { email: args.email },
-			data: { resetToken, resetTokenExpiry }
+			data: { resetToken, resetTokenExpiry },
 		});
 		// 3 email them that reset token
 		const mailRes = await transport.sendMail({
@@ -133,7 +133,7 @@ const Mutations = {
 			\n\n
 			<a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">
 				Click here to Reset
-				</a>`)
+				</a>`),
 		});
 
 		//  4 return the message
@@ -148,8 +148,8 @@ const Mutations = {
 		const [user] = await ctx.db.query.users({
 			where: {
 				resetToken: args.resetToken,
-				resetTokenExpiry_gte: Date.now() - 3600000
-			}
+				resetTokenExpiry_gte: Date.now() - 3600000,
+			},
 		});
 		// 3 check if it's expired
 		if (!user) {
@@ -163,15 +163,15 @@ const Mutations = {
 			data: {
 				password,
 				resetToken: null,
-				resetTokenExpiry: null
-			}
+				resetTokenExpiry: null,
+			},
 		});
 		// 6 generate jwt
 		const token = jwt.sign({ userId: updatedUser.id }, process.env.APP_SECRET);
 		// 7 set the jwt cookie
 		ctx.response.cookie('token', token, {
 			httpOnly: true,
-			maxAge: 1000 * 60 * 60 * 24 * 365
+			maxAge: 1000 * 60 * 60 * 24 * 365,
 		});
 		// 8 return the new user
 		return updatedUser;
@@ -185,8 +185,8 @@ const Mutations = {
 		const currentUser = await ctx.db.query.user(
 			{
 				where: {
-					id: ctx.request.userId
-				}
+					id: ctx.request.userId,
+				},
 			},
 			info
 		);
@@ -197,16 +197,79 @@ const Mutations = {
 			{
 				data: {
 					permissions: {
-						set: args.permissions
-					}
+						set: args.permissions,
+					},
 				},
 				where: {
-					id: args.userId
-				}
+					id: args.userId,
+				},
 			},
 			info
 		);
-	}
+	},
+	async addToCart(parent, args, ctx, info) {
+		// 1 make sure user signed in
+		const { userId } = ctx.request;
+		if (!userId) {
+			throw new Error('You must be signed in!');
+		}
+		// 2 query the users current cart
+		const [existingCartItem] = await ctx.db.query.cartItems({
+			where: {
+				user: { id: userId },
+				item: { id: args.id },
+			},
+		});
+		// 3 check if that item is already in their cart increment by one if it is
+		if (existingCartItem) {
+			console.log('Already in the cart!');
+			return ctx.db.mutation.updateCartItem(
+				{
+					where: { id: existingCartItem.id },
+					data: { quantity: existingCartItem.quantity + 1 },
+				},
+				info
+			);
+		}
+		// 4 if it's not create a fresh CartItem for that user
+		return ctx.db.mutation.createCartItem(
+			{
+				data: {
+					user: {
+						connect: { id: userId },
+					},
+					item: {
+						connect: { id: args.id },
+					},
+				},
+			},
+			info
+		);
+	},
+	async removeFromCart(parent, args, ctx, info) {
+		// 1 find the cart item
+		const cartItem = await ctx.db.query.cartItem(
+			{
+				where: {
+					id: args.id,
+				},
+			},
+			`{id, user {id}}`
+		);
+		// 2 make sure we found an item
+		if (!cartItem) throw new Error('No Cart Item Found!');
+		// 3 make sure they own that cart item
+		if (cartItem.user.id !== ctx.request.userId) {
+			throw new Error("You don't own that item!");
+		}
+		// 4 delete that cart item
+		return ctx.db.mutation.deleteCartItem(
+			{
+				where: { id: args.id },
+			},
+			info
+		);
+	},
 };
 
 module.exports = Mutations;
