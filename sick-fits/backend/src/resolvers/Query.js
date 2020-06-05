@@ -12,7 +12,7 @@ const Query = {
 		}
 		return ctx.db.query.user(
 			{
-				where: { id: ctx.request.userId }
+				where: { id: ctx.request.userId },
 			},
 			info
 		);
@@ -27,7 +27,7 @@ const Query = {
 
 		// 3 if they do, query all the users
 		return ctx.db.query.users({}, info);
-	}
+	},
 };
 
 module.exports = Query;
