@@ -6,5 +6,6 @@
   "editor.wordWrapColumn": 1,
   "editor.wordWrap": "on",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "deno.enable": false
 }
