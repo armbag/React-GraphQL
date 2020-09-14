@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
-import Form from './styles/Form';
-import Error from './ErrorMessage';
+import React, { Component } from 'react'
+import { Mutation } from 'react-apollo'
+import gql from 'graphql-tag'
+import Form from './styles/Form'
+import Error from './ErrorMessage'
 
 const REQUEST_RESET_MUTATION = gql`
 	mutation REQUEST_RESET_MUTATION($email: String!) {
@@ -10,15 +10,15 @@ const REQUEST_RESET_MUTATION = gql`
 			message
 		}
 	}
-`;
+`
 
 class RequestReset extends Component {
 	state = {
 		email: '',
-	};
+	}
 	saveToState = (e) => {
-		this.setState({ [e.target.name]: e.target.value });
-	};
+		this.setState({ [e.target.name]: e.target.value })
+	}
 
 	render() {
 		return (
@@ -26,11 +26,12 @@ class RequestReset extends Component {
 				{(reset, { error, loading, called }) => {
 					return (
 						<Form
-							method="post"
+							method='post'
+							data-test='form'
 							onSubmit={async (e) => {
-								e.preventDefault();
-								await reset();
-								this.setState({ email: '' });
+								e.preventDefault()
+								await reset()
+								this.setState({ email: '' })
 							}}
 						>
 							<fieldset disabled={loading} aria-busy={loading}>
@@ -39,24 +40,25 @@ class RequestReset extends Component {
 								{!error && !loading && called && (
 									<p>Success! Check your email for a reset link</p>
 								)}
-								<label htmlFor="email">
+								<label htmlFor='email'>
 									email
 									<input
-										type="email"
-										name="email"
-										placeholder="email"
+										type='email'
+										name='email'
+										placeholder='email'
 										value={this.state.email}
 										onChange={this.saveToState}
 									/>
 								</label>
-								<button type="submit">Request Reset!</button>
+								<button type='submit'>Request Reset!</button>
 							</fieldset>
 						</Form>
-					);
+					)
 				}}
 			</Mutation>
-		);
+		)
 	}
 }
 
-export default RequestReset;
+export default RequestReset
+export { REQUEST_RESET_MUTATION }
