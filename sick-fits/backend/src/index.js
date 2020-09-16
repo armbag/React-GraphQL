@@ -33,7 +33,7 @@ server.express.use(async (req, res, next) => {
 	next();
 });
 // Use express middleware to populate current user
-
+// start
 server.start(
 	{
 		cors: {
