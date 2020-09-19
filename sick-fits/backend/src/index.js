@@ -1,47 +1,42 @@
-const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
+const express = require('express')
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
+const createApolloServer = require('./createApolloServer')
+const db = require('./db')
+require('dotenv').config({ path: 'variables.env' })
 
-require('dotenv').config({ path: 'variables.env' });
-const createServer = require('./createServer');
-const db = require('./db');
+const app = express()
+const path = '/graphql'
 
-const server = createServer();
-
+const server = createApolloServer()
 // Use express middleware to handle cookies (JWT)
-server.express.use(cookieParser());
+app.use(cookieParser())
 
 // Decode the jwt so we can get the user id on each request
-server.express.use((req, res, next) => {
-	const { token } = req.cookies;
+app.use((req, res, next) => {
+	const { token } = req.cookies
 	if (token) {
-		const { userId } = jwt.verify(token, process.env.APP_SECRET);
+		const { userId } = jwt.verify(token, process.env.APP_SECRET)
 		// put the userId onto the req for future requests to access
-		req.userId = userId;
+		req.userId = userId
 	}
-	next();
-});
+	next()
+})
 //  Create a middleware that populates the user on each request
 
-server.express.use(async (req, res, next) => {
+app.use(async (req, res, next) => {
 	// if they're not logged in, skip this
-	if (!req.userId) return next();
+	if (!req.userId) return next()
 	const user = await db.query.user(
 		{ where: { id: req.userId } },
 		'{id, permissions, email, name}'
-	);
-	req.user = user;
-	next();
-});
-// Use express middleware to populate current user
-// start
-server.start(
-	{
-		cors: {
-			credentials: true,
-			origin: process.env.FRONTEND_URL
-		}
-	},
-	deets => {
-		console.log(`Server is now running on port http://localhost:${deets.port}`);
-	}
-);
+	)
+	req.user = user
+	next()
+})
+
+server.applyMiddleware({ app, path })
+
+app.listen({ port: 4000 }, () =>
+	console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+)
