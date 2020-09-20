@@ -1,5 +1,3 @@
-# import * from './generated/prisma.graphql'
-
 type SuccessMessage {
 	message: String
 }
