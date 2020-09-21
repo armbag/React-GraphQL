@@ -37,7 +37,7 @@ app.use(async (req, res, next) => {
 	next()
 })
 
-server.applyMiddleware({ app, path })
+server.applyMiddleware({ app })
 
 app.listen({ port: 4000 }, () =>
 	console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
