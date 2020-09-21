@@ -1,12 +1,11 @@
-console.log('dedans')
-const { ApolloServer } = require('apollo-server-express')
-console.log('dedans hello')
 const Mutation = require('./resolvers/Mutation')
 const Query = require('./resolvers/Query')
 const db = require('./db')
-const schemaGql = require('./schema.graphql')
+console.log('dedans')
+const { ApolloServer, gql } = require('apollo-server-express')
+console.log('dedans hello')
 
-function createApolloServer() {
+function createServer() {
 	// const schema = makeExecutableSchema({
 	// 	typeDefs: schemaGql,
 	// 	resolvers: {
@@ -16,7 +15,7 @@ function createApolloServer() {
 	// })
 
 	return new ApolloServer({
-		typeDefs: schemaGql,
+		typeDefs: 'src/schema.graphql',
 		resolvers: {
 			Mutation,
 			Query,
@@ -27,4 +26,4 @@ function createApolloServer() {
 	})
 }
 
-module.exports = createApolloServer
+module.exports = createServer
