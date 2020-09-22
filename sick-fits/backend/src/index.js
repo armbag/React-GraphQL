@@ -1,16 +1,12 @@
-console.log('----------------------------------avant')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
-console.log('----------------------------------apres require apollo')
 const createServer = require('./createServer')
-const db = require('./db')
-require('dotenv').config({ path: 'variables.env' })
 
-const app = express()
+require('dotenv').config({ path: 'variables.env' })
+// const app = express()
 const path = '/graphql'
 
 const server = createServer()
-console.log('Apres')
 // Use express middleware to handle cookies (JWT)
 app.use(cookieParser())
 
