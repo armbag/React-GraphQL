@@ -3,7 +3,6 @@
 type SuccessMessage {
 	message: String
 }
-
 type Mutation {
 	createItem(
 		title: String
