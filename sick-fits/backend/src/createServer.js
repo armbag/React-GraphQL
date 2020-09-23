@@ -1,10 +1,11 @@
+const { ApolloServer } = require('apollo-server-express')
+const { loadSchemaSync } = require('@graphql-tools/load')
+const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader')
+const { addResolversToSchema } = require('@graphql-tools/schema')
+
 const Mutation = require('./resolvers/Mutation')
 const Query = require('./resolvers/Query')
 const db = require('./db')
-const { ApolloServer } = require('apollo-server')
-
-const { loadSchemaSync } = require('@graphql-tools/load')
-const { GraphQLFileLoader } = require('@graphql-tools/graphql-file-loader')
 const path = require('path')
 
 const schema = loadSchemaSync(path.join(__dirname, 'schema.graphql'), {
