@@ -9,7 +9,7 @@ const stripe = require('../stripe')
 const Mutations = {
 	async createItem(parent, args, ctx, info) {
 		// check if they logged in
-		if (!ctx.request.userId) {
+		if (!ctx.req.userId) {
 			throw new Error('You must be logged in to do that!')
 		}
 
@@ -19,7 +19,7 @@ const Mutations = {
 					// this is how to create a relationship between item and the user
 					user: {
 						connect: {
-							id: ctx.request.userId,
+							id: ctx.req.userId,
 						},
 					},
 					...args,
@@ -51,8 +51,8 @@ const Mutations = {
 		// 1 find the item
 		const item = await ctx.db.query.item({ where }, `{id title user { id }}`)
 		// 2 check if they own that item, or have the permissions
-		const ownsItem = item.user.id === ctx.request.userId
-		const hasPermissions = ctx.request.user.permissions.some((permission) =>
+		const ownsItem = item.user.id === ctx.req.userId
+		const hasPermissions = ctx.req.user.permissions.some((permission) =>
 			['ADMIN', 'ITEMDELETE'].includes(permission)
 		)
 		if (!ownsItem && !hasPermissions) {
@@ -183,14 +183,14 @@ const Mutations = {
 	},
 	async updatePermissions(parent, args, ctx, info) {
 		// 1 check if they logged in
-		if (!ctx.request.userId) {
+		if (!ctx.req.userId) {
 			throw new Error('You must be logged in')
 		}
 		// 2 query the current user
 		const currentUser = await ctx.db.query.user(
 			{
 				where: {
-					id: ctx.request.userId,
+					id: ctx.req.userId,
 				},
 			},
 			info
@@ -214,7 +214,7 @@ const Mutations = {
 	},
 	async addToCart(parent, args, ctx, info) {
 		// 1 make sure user signed in
-		const { userId } = ctx.request
+		const { userId } = ctx.req
 		if (!userId) {
 			throw new Error('You must be signed in!')
 		}
@@ -264,7 +264,7 @@ const Mutations = {
 		// 2 make sure we found an item
 		if (!cartItem) throw new Error('No Cart Item Found!')
 		// 3 make sure they own that cart item
-		if (cartItem.user.id !== ctx.request.userId) {
+		if (cartItem.user.id !== ctx.req.userId) {
 			throw new Error("You don't own that item!")
 		}
 		// 4 delete that cart item
@@ -277,7 +277,7 @@ const Mutations = {
 	},
 	async createOrder(parent, args, ctx, info) {
 		// 1 query the current user and make sure they're signed in
-		const { userId } = ctx.request
+		const { userId } = ctx.req
 		if (!userId) throw new Error('You must be signed in to complete this order')
 		const user = await ctx.db.query.user(
 			{ where: { id: userId } },
