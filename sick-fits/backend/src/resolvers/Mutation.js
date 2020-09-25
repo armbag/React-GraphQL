@@ -66,6 +66,7 @@ const Mutations = {
 		// hash the password
 		const password = await bcrypt.hash(args.password, 10)
 		// create user in the database
+		console.log(args)
 		const user = await ctx.db.mutation.createUser(
 			{
 				data: {
@@ -79,7 +80,7 @@ const Mutations = {
 		// create the jwt token for them
 		const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET)
 		// we set the jwt as a cookie on the response
-		ctx.response.cookie('token', token, {
+		ctx.res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year cookie
 			sameSite: 'None',
@@ -102,17 +103,18 @@ const Mutations = {
 		// generate the jwt token
 		const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET)
 		// set the cookie with the token
-		ctx.response.cookie('token', token, {
+		ctx.res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 1000 * 60 * 60 * 24 * 365,
 			sameSite: 'None',
 			secure: true,
 		})
+
 		// return the user
 		return user
 	},
 	signout(parent, args, ctx, info) {
-		ctx.response.clearCookie('token')
+		ctx.res.clearCookie('token')
 		return { message: 'Successfuly signed out!' }
 	},
 	async requestReset(parent, args, ctx, info) {

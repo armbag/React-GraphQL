@@ -6,17 +6,21 @@ const db = require('./db')
 
 require('dotenv').config({ path: 'variables.env' })
 const app = express()
-
-const server = createServer()
 // Use express middleware to handle cookies (JWT)
 app.use(cookieParser())
+
+const server = createServer()
 
 // Decode the jwt so we can get the user id on each request
 app.use((req, res, next) => {
 	const { token } = req.cookies
+	console.log('token SET --------------------------------')
+	console.log(token)
+	console.log('===============================')
 	if (token) {
 		const { userId } = jwt.verify(token, process.env.APP_SECRET)
 		// put the userId onto the req for future requests to access
+		console.log(userId + '\n\n')
 		req.userId = userId
 	}
 	next()
@@ -31,7 +35,7 @@ app.use(async (req, res, next) => {
 		'{id, permissions, email, name}'
 	)
 	req.user = user
-	console.log('USER identified')
+	console.log(req.user)
 	next()
 })
 
