@@ -5,6 +5,7 @@ const { promisify } = require('util')
 const { transport, makeANiceEmail } = require('../mail.js')
 const { hasPermission } = require('../utils')
 const stripe = require('../stripe')
+// const stripe = require('stripe')('sk_test_aQBqxsaYOhyYCia1VuVcB7Sw00SXjqethr')
 
 const Mutations = {
 	async createItem(parent, args, ctx, info) {
@@ -66,7 +67,6 @@ const Mutations = {
 		// hash the password
 		const password = await bcrypt.hash(args.password, 10)
 		// create user in the database
-		console.log(args)
 		const user = await ctx.db.mutation.createUser(
 			{
 				data: {
@@ -81,7 +81,7 @@ const Mutations = {
 		const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET)
 		// we set the jwt as a cookie on the response
 		ctx.res.cookie('token', token, {
-			httpOnly: true,
+			// httpOnly: true,
 			maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year cookie
 			sameSite: 'None',
 			secure: true,
@@ -91,6 +91,7 @@ const Mutations = {
 	},
 	async signin(parent, { email, password }, ctx, info) {
 		// check if there is a user with that email
+		console.log('JE RENTRE')
 		const user = await ctx.db.query.user({ where: { email: email } })
 		if (!user) {
 			throw new Error(`No such user found for email ${email}`)
@@ -106,10 +107,9 @@ const Mutations = {
 		ctx.res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 1000 * 60 * 60 * 24 * 365,
-			sameSite: 'None',
-			secure: true,
+			// sameSite: 'None',
+			// secure: true,
 		})
-
 		// return the user
 		return user
 	},
@@ -177,8 +177,10 @@ const Mutations = {
 		const token = jwt.sign({ userId: updatedUser.id }, process.env.APP_SECRET)
 		// 7 set the jwt cookie
 		ctx.response.cookie('token', token, {
-			httpOnly: true,
+			// httpOnly: true,
 			maxAge: 1000 * 60 * 60 * 24 * 365,
+			sameSite: 'None',
+			secure: true,
 		})
 		// 8 return the new user
 		return updatedUser
@@ -229,7 +231,6 @@ const Mutations = {
 		})
 		// 3 check if that item is already in their cart increment by one if it is
 		if (existingCartItem) {
-			console.log('Already in the cart!')
 			return ctx.db.mutation.updateCartItem(
 				{
 					where: { id: existingCartItem.id },
@@ -284,34 +285,50 @@ const Mutations = {
 		const user = await ctx.db.query.user(
 			{ where: { id: userId } },
 			`{
-				id
-				name
-				email
-				cart {
-						id
-						quantity
-						item {
-								title
-								price
-								id
-								description
-								image
-								largeImage
-						}
-				}}`
+      id
+      name
+      email
+      cart {
+        id
+        quantity
+        item { title price id description image largeImage }
+      }}`
 		)
 		// 2 recalculate the total for the price
 		const amount = user.cart.reduce(
 			(tally, cartItem) => tally + cartItem.item.price * cartItem.quantity,
 			0
 		)
-		console.log(`charging for total ${amount}`)
+		console.log(`AMOUNT IS ${amount}\n\n`)
+		console.log(
+			'_________________________USER FOUND IS__________________________________'
+		)
+		console.log(user)
+		console.log('___________________________________________________________')
 		// 3 Create the stripe charge(turn token into money)
+		console.log(`HIS TOKEN FROM STRIPE IS ${args.token}`)
+		console.log(
+			'___________________________________________________________\n\n\n'
+		)
+		const customer = await stripe.customers
+			.create({
+				email: user.email,
+				source: args.token,
+			})
+			.catch((err) => console.log(err))
+		console.log(`CUSTOMER IS`)
+		console.log(customer)
+		console.log('------------------------------------------------')
 		const charge = await stripe.charges.create({
+			customer: customer.id,
 			amount,
 			currency: 'USD',
-			source: args.token,
 		})
+		console.log(
+			'__________________________CHARGE_________________________________'
+		)
+		console.log(charge)
+		console.log('___________________________________________________________')
 		// 4 Convert the cartItems to orderItems
 		const orderItems = user.cart.map((cartItem) => {
 			const orderItem = {
@@ -339,6 +356,8 @@ const Mutations = {
 			},
 		})
 		// 7 Return the order to the client
+		console.log('----------THIS IS ORDER --------------------')
+		console.log(order)
 		return order
 	},
 }

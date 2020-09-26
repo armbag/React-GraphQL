@@ -31,11 +31,17 @@ class TakeMyMoney extends React.Component {
 	onToken = async (res, createOrder) => {
 		NProgress.start()
 		// manually call the mutation once we have the stripe token
+		console.log('res.id in TakeMyMoney componenent ===>>>')
+		console.log(res.id)
 		const order = await createOrder({
 			variables: {
 				token: res.id,
 			},
-		}).catch((err) => alert(err.message))
+		}).catch((err) => console.log(err.message))
+		console.log('---------------ORDER IS ================')
+		console.log(order)
+		console.log('---------------ENDDDDDD ================')
+
 		Router.push({
 			pathname: '/order',
 			query: { id: order.data.createOrder.id },
