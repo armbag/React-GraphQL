@@ -5,7 +5,6 @@ const { promisify } = require('util')
 const { transport, makeANiceEmail } = require('../mail.js')
 const { hasPermission } = require('../utils')
 const stripe = require('../stripe')
-// const stripe = require('stripe')('sk_test_aQBqxsaYOhyYCia1VuVcB7Sw00SXjqethr')
 
 const Mutations = {
 	async createItem(parent, args, ctx, info) {
