@@ -50,6 +50,6 @@ server.applyMiddleware({
 // app.listen({ port: process.env.PORT || 4444 }, () =>
 // 	console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 // )
-server.listen({ port: process.env.PORT || 4444 }).then(({ url }) => {
+app.listen({ port: process.env.PORT || 4444 }).then(({ url }) => {
 	console.log(`🚀 Server ready at ${url}`)
 })
