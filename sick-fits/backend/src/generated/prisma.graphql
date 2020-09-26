@@ -1,5 +1,5 @@
-# source: https://us1.prisma.sh/armen/siccck-fits/dev
-# timestamp: Sat Jul 04 2020 17:36:52 GMT-0400 (Eastern Daylight Time)
+# source: https://production-54ck-0fbb7e2e9f.herokuapp.com/backend/prod
+# timestamp: Sat Sep 26 2020 16:18:17 GMT+0200 (Central European Summer Time)
 
 type AggregateCartItem {
   count: Int!
@@ -350,7 +350,6 @@ input ItemCreateInput {
   image: String
   largeImage: String
   price: Int!
-  createdAt: DateTime
   user: UserCreateOneInput!
 }
 
@@ -440,7 +439,6 @@ input ItemUpdateDataInput {
   image: String
   largeImage: String
   price: Int
-  createdAt: DateTime
   user: UserUpdateOneRequiredInput
 }
 
@@ -450,7 +448,6 @@ input ItemUpdateInput {
   image: String
   largeImage: String
   price: Int
-  createdAt: DateTime
   user: UserUpdateOneRequiredInput
 }
 
@@ -460,7 +457,6 @@ input ItemUpdateManyMutationInput {
   image: String
   largeImage: String
   price: Int
-  createdAt: DateTime
 }
 
 input ItemUpdateOneInput {
