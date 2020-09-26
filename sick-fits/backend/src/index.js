@@ -35,14 +35,18 @@ app.use(async (req, res, next) => {
 	next()
 })
 
+// server.applyMiddleware({
+// 	app,
+// 	cors: {
+// 		origin: process.env.FRONTEND_URL,
+// 		credentials: true,
+// 	},
+// })
 server.applyMiddleware({
 	app,
-	cors: {
-		origin: process.env.FRONTEND_URL,
-		credentials: true,
-	},
+	cors: false,
 })
 
-app.listen({ port: 4444 }, () =>
+app.listen({ port: process.env.PORT || 4444 }, () =>
 	console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 )
