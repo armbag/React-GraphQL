@@ -27,6 +27,7 @@ app.use((req, res, next) => {
 
 app.use(async (req, res, next) => {
 	console.log('hello 2')
+	console.log(process.env.FRONTEND_URL)
 	// if they're not logged in, skip this
 	if (!req.userId) return next()
 	const user = await db.query.user(
@@ -40,7 +41,7 @@ app.use(async (req, res, next) => {
 server.applyMiddleware({
 	app,
 	cors: {
-		origin: 'https://new-51ck-next.herokuapp.com',
+		origin: process.env.FRONTEND_URL,
 		credentials: true,
 	},
 })
