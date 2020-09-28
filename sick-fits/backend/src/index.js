@@ -10,9 +10,11 @@ const app = express()
 
 const server = createServer()
 
+console.log('hello before')
 app.use(cookieParser())
 // Decode the jwt so we can get the user id on each request
 app.use((req, res, next) => {
+	console.log('hello')
 	const { token } = req.cookies
 	if (token) {
 		const { userId } = jwt.verify(token, process.env.APP_SECRET)
@@ -24,6 +26,7 @@ app.use((req, res, next) => {
 //  Create a middleware that populates the user on each request
 
 app.use(async (req, res, next) => {
+	console.log('hello 2')
 	// if they're not logged in, skip this
 	if (!req.userId) return next()
 	const user = await db.query.user(
