@@ -45,7 +45,7 @@ server.applyMiddleware({
 // 	app,
 // 	cors: false,
 // })
-
-app.listen({ port: process.env.PORT || 4444 }, () =>
+const port = process.env.PORT || 4444
+app.listen({ port }, () =>
 	console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 )
