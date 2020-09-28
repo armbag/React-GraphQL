@@ -31,7 +31,6 @@ app.use(async (req, res, next) => {
 		'{id, permissions, email, name}'
 	)
 	req.user = user
-	console.log('USER identified')
 	next()
 })
 
