@@ -40,10 +40,10 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({
 	app,
-	cors: {
-		origin: process.env.FRONTEND_URL,
-		credentials: true,
-	},
+	// cors: {
+	// 	origin: process.env.FRONTEND_URL,
+	// 	credentials: true,
+	// },
 })
 // server.applyMiddleware({
 // 	app,
