@@ -36,11 +36,7 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({
 	app,
-	path: '/graphql',
-	cors: {
-		credentials: true,
-		origin: process.env.FRONTEND_URL,
-	},
+	cors: false,
 })
 // server.applyMiddleware({
 // 	app,
