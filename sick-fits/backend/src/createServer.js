@@ -27,6 +27,7 @@ function createServer() {
 			Query,
 		},
 		context: (req) => ({ ...req, db }),
+		introspection: true,
 		playground: true,
 	})
 }
