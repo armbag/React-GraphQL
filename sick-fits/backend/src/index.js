@@ -36,7 +36,10 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({
 	app,
-	cors: false,
+	cors: {
+		credentials: true,
+		origin: 'https://new-51ck-next.herokuapp.com',
+	},
 })
 // server.applyMiddleware({
 // 	app,
